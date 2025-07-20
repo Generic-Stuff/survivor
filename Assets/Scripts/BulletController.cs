@@ -3,7 +3,7 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
     private Rigidbody2D rigidBody;
-    private float bulletSpeed = 7;
+    private float bulletSpeed = 5;
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody2D>();

@@ -13,8 +13,8 @@ TagManager:
   - Utils
   - Water
   - UI
-  - 
-  - 
+  - Weapons
+  - Player
   - 
   - 
   - 
@@ -42,6 +42,12 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 799806771
+    locked: 0
+  - name: Weapons
+    uniqueID: 2401242139
     locked: 0
   m_RenderingLayers:
   - Default

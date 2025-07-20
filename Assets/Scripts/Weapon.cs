@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BulletSpawner : MonoBehaviour
+public class Weapon : MonoBehaviour
 {
     public Transform target;
     public Camera mainCamera;
@@ -32,6 +32,16 @@ public class BulletSpawner : MonoBehaviour
 
         Vector3 lookAtDirection = mouseWorldPosition - target.position;
         target.right = lookAtDirection;
+        
+        // Flip
+        if (lookAtDirection.x < 0)
+        {
+            target.localScale = new Vector3(1, -1, 1);
+        }
+        else
+        {
+            target.localScale = new Vector3(1, 1, 1);
+        }
         
     }
 }

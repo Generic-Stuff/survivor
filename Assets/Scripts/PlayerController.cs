@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 relativePosition;
 
     [Header("Atack")]
+    public GameObject weapon;
+    private SpriteRenderer srWeapon; 
     public Transform bulletSpawner;
     public GameObject bulletPrefab;
 
@@ -27,7 +29,8 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
 
         transformP = GetComponent<Transform>();
-        
+        srWeapon = weapon.GetComponent<SpriteRenderer>();
+
         if (rb == null)
         {
             Debug.LogError("Rigidbody2D not found on this GameObject.");
@@ -101,14 +104,16 @@ public class PlayerController : MonoBehaviour
         {
             // derecha
             direction = "Derecha";
+
+            srWeapon.sortingOrder = 1; 
             animator.SetFloat("Horizontal", 1);
             animator.SetFloat("Vertical", 0);
             if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
-                bulletSpawner.position = new Vector3(0.267f, -0.027f, 0f);
+
                 animator.SetTrigger("Shoot");
                 PlayerAtack();
-                ammo--;                
+                ammo--;
             }
         }
         else if (angle > 22.5f && angle < 67.5f)
@@ -116,63 +121,106 @@ public class PlayerController : MonoBehaviour
             // arriba-derecha
             direction = "Arriba-Derecha";
 
+            srWeapon.sortingOrder = -1; 
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;
+            }
+
         }
         else if (angle >= 67.5f && angle <= 112.5f)
         {
             // arriba
             direction = "Arriba";
+
+            srWeapon.sortingOrder = -1;            
             animator.SetFloat("Horizontal", 0);
             animator.SetFloat("Vertical", 1);
             if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
-                bulletSpawner.position = new Vector3(0.172f, 0.257f, 0f);
+
                 animator.SetTrigger("Shoot");
                 PlayerAtack();
-                ammo--;                
+                ammo--;
             }
         }
         else if (angle > 112.5f && angle < 157.5f)
         {
             // arriba-izquierda
             direction = "Arriba-Izquierda";
+
+            srWeapon.sortingOrder = -1; 
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;
+            }
         }
         else if (angle >= 157.5f || angle <= -157.5f)
         {
             // izquierda
             direction = "Izquierda";
+            
+            srWeapon.sortingOrder = 1;
+             
             animator.SetFloat("Horizontal", -1);
             animator.SetFloat("Vertical", 0);
             if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
-                bulletSpawner.position = new Vector3(-0.295f, -0.033f, 0f);
+
                 animator.SetTrigger("Shoot");
                 PlayerAtack();
-                ammo--;                
+                ammo--;
             }
         }
         else if (angle < -22.5f && angle > -67.5f)
         {
             // abajo-derecha
             direction = "Abajo-Derecha";
+
+            srWeapon.sortingOrder = 1; 
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;
+            }
         }
         else if (angle <= -67.5f && angle >= -112.5f)
         {
             // abajo
             direction = "Abajo";
+
+            srWeapon.sortingOrder = 1; 
             animator.SetFloat("Horizontal", 0);
             animator.SetFloat("Vertical", -1);
             if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
-                bulletSpawner.position = new Vector3(-0.105f, -0.294f, 0f);
+
                 animator.SetTrigger("Shoot");
                 PlayerAtack();
-                ammo--;                
+                ammo--;
             }
         }
         else if (angle < -112.5f && angle > -157.5f)
         {
             // abajo-izquierda
             direction = "Abajo-Izquierda";
+            
+            srWeapon.sortingOrder = 1; 
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;
+            }
         }
 
         Debug.Log("DirecciÃ³n del mouse: " + direction);
