@@ -8,6 +8,8 @@ namespace Game.Utils.GenericLogs
          Error Messages
         */
         public const string RightBodyNotFound = "Rigidbody2D not found on this GameObject.";
+        public const string LevelIsnotDefined = "Level not defined, defaulting to LevelOne";
+        public const string LevelLoaded = "Level Loaded: ";
 
     }
 }
