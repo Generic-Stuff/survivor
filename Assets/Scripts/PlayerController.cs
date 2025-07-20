@@ -1,128 +1,196 @@
 using UnityEngine;
-using Game.Utils;
-using Game.Utils.GenericLogs;
 using System.Collections;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody2D rb;
-    private Animator animator;
-    private Transform transformP;
 
-    public Camera cam;
     public float moveSpeed = 5f;
-
-
+    private Rigidbody2D rb;
     private Vector2 moveInput;
+    private Animator animator;
+    
+
+    private Transform transformP;
+    public Camera cam;
     private Vector3 relativePosition;
+
+    [Header("Atack")]
+    public Transform bulletSpawner;
+    public GameObject bulletPrefab;
+
+    public int ammo = 30;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        transformP = GetComponent<Transform>();
 
+        transformP = GetComponent<Transform>();
+        
         if (rb == null)
         {
-            Debug.LogError(GenericLogMessages.RightBodyNotFound);
-            enabled = false;
+            Debug.LogError("Rigidbody2D not found on this GameObject.");
+            enabled = false; // Disable the script if no Rigidbody2D is present
         }
     }
 
     void Update()
     {
+        //Movements
+
         Movement();
+
+        // Animations 
+
         Animations();
+
+        // View of player
+
         View();
+
     }
 
     void FixedUpdate()
     {
+        // Apply movement to the Rigidbody2D in FixedUpdate for physics calculations
         rb.linearVelocity = moveInput * moveSpeed;
     }
     void Movement()
     {
-        moveInput.x = Input.GetAxisRaw(PlayerConstants.AnimHorizontal);
-        moveInput.y = Input.GetAxisRaw(PlayerConstants.AnimVertical);
+        // Get input from the horizontal and vertical axes
+        moveInput.x = Input.GetAxisRaw("Horizontal");
+        moveInput.y = Input.GetAxisRaw("Vertical");
 
+        // Normalize the input vector to prevent faster diagonal movement
         moveInput.Normalize();
     }
     void Animations()
     {
-        float horizontal = Input.GetAxisRaw(PlayerConstants.AnimHorizontal);
-        float vertical = Input.GetAxisRaw(PlayerConstants.AnimVertical);
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
         if (horizontal != 0 || vertical != 0)
         {
-            animator.SetFloat(PlayerConstants.AnimHorizontal, horizontal);
-            animator.SetFloat(PlayerConstants.AnimVertical, vertical);
-            animator.SetFloat(PlayerConstants.Speed, 1);
+
+            animator.SetFloat("Horizontal", horizontal);
+            animator.SetFloat("Vertical", vertical);
+
+            animator.SetFloat("Speed", 1);
 
         }
         else
         {
-            animator.SetFloat(PlayerConstants.Speed, 0);
+            animator.SetFloat("Speed", 0);
         }
 
     }
     void View()
     {
+
         Vector3 mousePosition = Input.mousePosition;
+
         Vector3 worldMousePosition = cam.ScreenToWorldPoint(mousePosition);
 
-        float angle = Mathf.Atan2(relativePosition.y, relativePosition.x) * Mathf.Rad2Deg;
-        // Currently, we are not using this variable
-        string direction;
-        
         relativePosition = worldMousePosition - transformP.position;
 
-        if (angle >= PlayerConstants.NegativeRightAngle && angle <= PlayerConstants.PositiveRightAngle)
+        string direction = "";
+        float angle = Mathf.Atan2(relativePosition.y, relativePosition.x) * Mathf.Rad2Deg;
+
+        if (angle >= -22.5f && angle <= 22.5f)
         {
-            direction = PlayerConstants.Right;
-            animator.SetFloat(PlayerConstants.AnimHorizontal, 1);
-            animator.SetFloat(PlayerConstants.AnimVertical, 0);
-            if (Input.GetMouseButtonDown(0))
-                animator.SetTrigger(PlayerConstants.AnimShoot);
+            // derecha
+            direction = "Derecha";
+            animator.SetFloat("Horizontal", 1);
+            animator.SetFloat("Vertical", 0);
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+                bulletSpawner.position = new Vector3(0.267f, -0.027f, 0f);
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
+            }
         }
-        else if (angle > PlayerConstants.PositiveRightAngle && angle < PlayerConstants.UpRightLessAngle)
+        else if (angle > 22.5f && angle < 67.5f)
         {
-            direction = PlayerConstants.UpRight;
+            // arriba-derecha
+            direction = "Arriba-Derecha";
+
         }
-        else if (angle >= PlayerConstants.UpAngle && angle <= PlayerConstants.UpAngleSecondary)
+        else if (angle >= 67.5f && angle <= 112.5f)
         {
-            direction = PlayerConstants.Up;
-            animator.SetFloat(PlayerConstants.AnimHorizontal, 0);
-            animator.SetFloat(PlayerConstants.AnimVertical, 1);
-            if (Input.GetMouseButtonDown(0))
-                animator.SetTrigger(PlayerConstants.AnimShoot);
+            // arriba
+            direction = "Arriba";
+            animator.SetFloat("Horizontal", 0);
+            animator.SetFloat("Vertical", 1);
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+                bulletSpawner.position = new Vector3(0.172f, 0.257f, 0f);
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
+            }
         }
-        else if (angle > PlayerConstants.UpAngleSecondary && angle < PlayerConstants.PositiveLeftAngle)
+        else if (angle > 112.5f && angle < 157.5f)
         {
-            direction = PlayerConstants.UpLeft;
+            // arriba-izquierda
+            direction = "Arriba-Izquierda";
         }
-        else if (angle >= PlayerConstants.PositiveLeftAngle || angle <= PlayerConstants.NegativeLeftAngle)
+        else if (angle >= 157.5f || angle <= -157.5f)
         {
-            direction = PlayerConstants.Left;
-            animator.SetFloat(PlayerConstants.AnimHorizontal, -1);
-            animator.SetFloat(PlayerConstants.AnimVertical, 0);
-            if (Input.GetMouseButtonDown(0))
-                animator.SetTrigger(PlayerConstants.AnimShoot);
+            // izquierda
+            direction = "Izquierda";
+            animator.SetFloat("Horizontal", -1);
+            animator.SetFloat("Vertical", 0);
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+                bulletSpawner.position = new Vector3(-0.295f, -0.033f, 0f);
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
+            }
         }
-        else if (angle < PlayerConstants.DownRightGreaterAngle && angle > PlayerConstants.DownRightLessAngle)
+        else if (angle < -22.5f && angle > -67.5f)
         {
-            direction = PlayerConstants.DownRight;
+            // abajo-derecha
+            direction = "Abajo-Derecha";
         }
-        else if (angle <= PlayerConstants.DownAngleUpper && angle >= PlayerConstants.DownAngleLower)
+        else if (angle <= -67.5f && angle >= -112.5f)
         {
-            direction = PlayerConstants.Down;
-            animator.SetFloat(PlayerConstants.AnimHorizontal, 0);
-            animator.SetFloat(PlayerConstants.AnimVertical, -1);
-            if (Input.GetMouseButtonDown(0))
-                animator.SetTrigger(PlayerConstants.AnimShoot);
+            // abajo
+            direction = "Abajo";
+            animator.SetFloat("Horizontal", 0);
+            animator.SetFloat("Vertical", -1);
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
+            {
+                bulletSpawner.position = new Vector3(-0.105f, -0.294f, 0f);
+                animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
+            }
         }
-        else if (angle < PlayerConstants.DownLeftGreaterAngle && angle > PlayerConstants.DownLeftLessAngle)
+        else if (angle < -112.5f && angle > -157.5f)
         {
-            direction = PlayerConstants.DownLeft;
+            // abajo-izquierda
+            direction = "Abajo-Izquierda";
         }
+
+        Debug.Log("DirecciÃ³n del mouse: " + direction);
+
+    }
+    void PlayerAtack()
+    {
+
+        if (ammo > 0)
+        {
+            GameObject arrowPref = Instantiate(bulletPrefab, bulletSpawner.position, bulletSpawner.rotation);
+            BulletController bullet = arrowPref.GetComponent<BulletController>();
+            bullet.Shoot(bulletSpawner.transform.right); 
+        }
+        else
+        {
+            Debug.Log("Se quedo sin municion");
+        }
+
     }
 }
