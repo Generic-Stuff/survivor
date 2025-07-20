@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,11 +9,18 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private Animator animator;
-
+    
 
     private Transform transformP;
     public Camera cam;
     private Vector3 relativePosition;
+
+    [Header("Atack")]
+    public Transform bulletSpawner;
+    public GameObject bulletPrefab;
+
+    public int ammo = 30;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -38,7 +46,7 @@ public class PlayerController : MonoBehaviour
         Animations();
 
         // View of player
-        
+
         View();
 
     }
@@ -95,9 +103,12 @@ public class PlayerController : MonoBehaviour
             direction = "Derecha";
             animator.SetFloat("Horizontal", 1);
             animator.SetFloat("Vertical", 0);
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
+                bulletSpawner.position = new Vector3(0.267f, -0.027f, 0f);
                 animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
             }
         }
         else if (angle > 22.5f && angle < 67.5f)
@@ -112,9 +123,12 @@ public class PlayerController : MonoBehaviour
             direction = "Arriba";
             animator.SetFloat("Horizontal", 0);
             animator.SetFloat("Vertical", 1);
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
+                bulletSpawner.position = new Vector3(0.172f, 0.257f, 0f);
                 animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
             }
         }
         else if (angle > 112.5f && angle < 157.5f)
@@ -128,9 +142,12 @@ public class PlayerController : MonoBehaviour
             direction = "Izquierda";
             animator.SetFloat("Horizontal", -1);
             animator.SetFloat("Vertical", 0);
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
+                bulletSpawner.position = new Vector3(-0.295f, -0.033f, 0f);
                 animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
             }
         }
         else if (angle < -22.5f && angle > -67.5f)
@@ -144,9 +161,12 @@ public class PlayerController : MonoBehaviour
             direction = "Abajo";
             animator.SetFloat("Horizontal", 0);
             animator.SetFloat("Vertical", -1);
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && ammo > 0)
             {
+                bulletSpawner.position = new Vector3(-0.105f, -0.294f, 0f);
                 animator.SetTrigger("Shoot");
+                PlayerAtack();
+                ammo--;                
             }
         }
         else if (angle < -112.5f && angle > -157.5f)
@@ -157,6 +177,20 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log("Dirección del mouse: " + direction);
 
+    }
+    void PlayerAtack()
+    {
+
+        if (ammo > 0)
+        {
+            GameObject arrowPref = Instantiate(bulletPrefab, bulletSpawner.position, bulletSpawner.rotation);
+            BulletController bullet = arrowPref.GetComponent<BulletController>();
+            bullet.Shoot(bulletSpawner.transform.right); 
+        }
+        else
+        {
+            Debug.Log("Se quedo sin municion");
+        }
 
     }
 
